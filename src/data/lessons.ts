@@ -38,11 +38,13 @@ export interface Lesson {
     required_vocabulary: string[];
   };
   tips: string[];
+  aiTutor?: string; // Added aiTutor field
 }
 
 export const CORE_LESSONS: Lesson[] = [
   {
     id: 'ordering-coffee',
+    aiTutor: 'Sofia',
     title: 'Ordering Coffee',
     description: 'Learn to order coffee and pastries at a Spanish café',
     level: 'beginner',
@@ -153,6 +155,7 @@ export const CORE_LESSONS: Lesson[] = [
   },
   {
     id: 'asking-directions',
+    aiTutor: 'Sofia',
     title: 'Asking for Directions',
     description: 'Learn to ask for and understand directions in Spanish',
     level: 'beginner',
@@ -255,6 +258,7 @@ export const CORE_LESSONS: Lesson[] = [
   },
   {
     id: 'restaurant-ordering',
+    aiTutor: 'Sofia',
     title: 'Restaurant Ordering',
     description: 'Order food and drinks at a Spanish restaurant',
     level: 'elementary',
@@ -362,8 +366,10 @@ export const CORE_LESSONS: Lesson[] = [
       'Remember to pronounce double "l" as "y" in "paella"'
     ]
   },
+  // MVP Lesson 4: Hotel Check-in (Adapted from existing if possible, or added)
   {
     id: 'hotel-checkin',
+    aiTutor: 'Sofia',
     title: 'Hotel Check-in',
     description: 'Check into a hotel and handle room requests',
     level: 'elementary',
@@ -463,119 +469,150 @@ export const CORE_LESSONS: Lesson[] = [
       'Use "a nombre de" to say "under the name of"'
     ]
   },
+  // MVP Lesson 5: Shopping for Clothes
   {
-    id: 'shopping-market',
-    title: 'Shopping at the Market',
-    description: 'Buy fruits and vegetables at a Spanish market',
+    id: 'shopping-clothes',
+    title: 'Shopping for Clothes',
+    aiTutor: 'Sofia',
+    description: 'Learn to buy clothes and ask about sizes/colors in a store.',
     level: 'elementary',
     category: 'daily',
-    duration: 9,
+    duration: 10,
     learning_goals: [
-      'Ask for prices',
-      'Buy fruits and vegetables',
-      'Use quantity expressions',
-      'Negotiate prices'
+      'Ask for items of clothing',
+      'Inquire about sizes and colors',
+      'Ask to try on clothes',
+      'Ask for the price and pay'
     ],
     vocabulary: [
       {
-        spanish: 'mercado',
-        english: 'market',
-        pronunciation: 'mer-KAH-doh',
-        example: 'Voy al mercado'
+        spanish: 'camiseta',
+        english: 't-shirt',
+        pronunciation: 'kah-mee-SEH-tah',
+        example: 'Busco una camiseta.'
+      },
+      {
+        spanish: 'talla',
+        english: 'size',
+        pronunciation: 'TAH-yah',
+        example: '¿Qué talla necesita?'
+      },
+      {
+        spanish: 'probar',
+        english: 'to try on',
+        pronunciation: 'proh-BAHR',
+        example: '¿Puedo probarme esto?'
+      },
+      {
+        spanish: 'probadores',
+        english: 'fitting rooms',
+        pronunciation: 'proh-bah-DOH-rehs',
+        example: 'Los probadores están al fondo.'
       },
       {
         spanish: 'precio',
         english: 'price',
         pronunciation: 'PREH-see-oh',
         example: '¿Cuál es el precio?'
-      },
-      {
-        spanish: 'kilo',
-        english: 'kilo',
-        pronunciation: 'KEE-loh',
-        example: 'Un kilo de tomates'
-      },
-      {
-        spanish: 'fresco',
-        english: 'fresh',
-        pronunciation: 'FRES-koh',
-        example: 'Están muy frescos'
-      },
-      {
-        spanish: 'cambio',
-        english: 'change',
-        pronunciation: 'KAM-bee-oh',
-        example: 'Aquí tiene el cambio'
       }
     ],
     dialogue: [
       {
-        id: 'market-1',
+        id: 'clothes-1',
         speaker: 'ai',
-        text: '¡Buenos días! ¿Qué necesita hoy?',
-        translation: 'Good morning! What do you need today?',
-        expectedResponse: 'Buenos días. Quiero comprar tomates.',
-        alternatives: ['Necesito frutas', 'Quiero verduras']
+        text: '¡Hola! ¿En qué puedo ayudarle?',
+        translation: 'Hi! How can I help you?',
+        expectedResponse: 'Hola, estoy buscando una camiseta.',
+        alternatives: ['Buenos días, busco unos pantalones.', 'Hola, ¿tiene chaquetas?']
       },
       {
-        id: 'market-2',
+        id: 'clothes-2',
         speaker: 'user',
-        text: 'Buenos días. Quiero comprar tomates.',
-        translation: 'Good morning. I want to buy tomatoes.'
+        text: 'Hola, estoy buscando una camiseta.', // User prompt if AI is to respond to this
+        translation: 'Hello, I\'m looking for a t-shirt.'
       },
       {
-        id: 'market-3',
+        id: 'clothes-3',
         speaker: 'ai',
-        text: 'Muy bien. Están muy frescos hoy. ¿Cuántos kilos quiere?',
-        translation: 'Very good. They are very fresh today. How many kilos do you want?',
-        expectedResponse: 'Un kilo, por favor.',
-        alternatives: ['Medio kilo', 'Dos kilos']
+        text: 'Claro. Las camisetas están por aquí. ¿Qué talla usa?',
+        translation: 'Of course. The t-shirts are over here. What size do you wear?',
+        expectedResponse: 'Uso la talla mediana.',
+        alternatives: ['Necesito la talla grande.', 'Pequeña, por favor.']
       },
       {
-        id: 'market-4',
+        id: 'clothes-4',
         speaker: 'user',
-        text: 'Un kilo, por favor.',
-        translation: 'One kilo, please.'
+        text: 'Uso la talla mediana.',
+        translation: 'I wear medium size.'
       },
       {
-        id: 'market-5',
+        id: 'clothes-5',
         speaker: 'ai',
-        text: 'Perfecto. Son 3 euros el kilo. ¿Algo más?',
-        translation: 'Perfect. It\'s 3 euros per kilo. Anything else?',
-        expectedResponse: 'Sí, también quiero plátanos.',
-        alternatives: ['No, gracias', 'Eso es todo']
+        text: 'Tenemos esta azul y esta roja en talla mediana. ¿Le gusta alguna?',
+        translation: 'We have this blue one and this red one in medium. Do you like any?',
+        expectedResponse: 'Me gusta la azul. ¿Puedo probármela?',
+        alternatives: ['Prefiero la roja.', '¿Tiene otros colores?']
       },
       {
-        id: 'market-6',
+        id: 'clothes-6',
         speaker: 'user',
-        text: 'Sí, también quiero plátanos.',
-        translation: 'Yes, I also want bananas.'
+        text: 'Me gusta la azul. ¿Puedo probármela?',
+        translation: 'I like the blue one. Can I try it on?'
       },
       {
-        id: 'market-7',
+        id: 'clothes-7',
         speaker: 'ai',
-        text: 'Los plátanos están a 2 euros el kilo. ¿Cuántos?',
-        translation: 'Bananas are 2 euros per kilo. How many?',
-        expectedResponse: 'Medio kilo está bien.',
-        alternatives: ['Un kilo también', 'Solo unos pocos']
+        text: '¡Por supuesto! Los probadores están al fondo a la derecha.',
+        translation: 'Of course! The fitting rooms are at the end to the right.'
+        // After user "tries it on" (simulated pause or next step)
+      },
+      // {
+      //   id: 'clothes-8',
+      //   speaker: 'user', // This would be a simulated action or a prompt for next user speech
+      //   text: '(Te pruebas la camiseta)',
+      //   translation: '(You try on the t-shirt)'
+      // },
+      {
+        id: 'clothes-9',
+        speaker: 'ai',
+        text: '¿Qué tal le queda?',
+        translation: 'How does it fit?',
+        expectedResponse: 'Me queda bien. Me la llevo.',
+        alternatives: ['Me queda un poco grande.', 'No me convence.']
+      },
+      {
+        id: 'clothes-10',
+        speaker: 'user',
+        text: 'Me queda bien. Me la llevo.',
+        translation: 'It fits well. I\'ll take it.'
+      },
+      {
+        id: 'clothes-11',
+        speaker: 'ai',
+        text: '¡Estupendo! Son quince euros.',
+        translation: 'Great! That\'s fifteen euros.',
+        expectedResponse: 'Aquí tiene. Gracias.',
+        alternatives: ['¿Aceptan tarjeta?', 'Perfecto.']
       }
     ],
-    scenario_context: 'You are at a bustling Spanish market buying fresh produce. The vendor is friendly and helpful.',
+    scenario_context: 'You are in a clothing store in Spain. You want to buy a t-shirt.',
     completion_criteria: {
-      min_exchanges: 6,
-      target_pronunciation_score: 75,
-      required_vocabulary: ['precio', 'kilo', 'quiero']
+      min_exchanges: 5,
+      target_pronunciation_score: 70,
+      required_vocabulary: ['camiseta', 'talla', 'probar', 'precio']
     },
     tips: [
-      'Markets often have better prices than supermarkets',
-      'Use "un kilo" or "medio kilo" for quantities',
-      'Don\'t forget to say "gracias" after receiving your change'
+      'Use "busco..." when you are looking for something.',
+      '"¿Puedo probarme...?" is how you ask to try something on.',
+      'Be ready to state your size ("talla").'
     ]
   }
 ];
 
 // Helper function to get lesson by ID
 export function getLessonById(id: string): Lesson | undefined {
+  // Ensure we are searching through all lessons including the newly added ones.
+  // If CORE_LESSONS is the definitive list, this is fine.
   return CORE_LESSONS.find(lesson => lesson.id === id);
 }
 
@@ -588,6 +625,19 @@ export function getLessonsByLevel(level: LessonLevel): Lesson[] {
 export function getLessonsByCategory(category: LessonCategory): Lesson[] {
   return CORE_LESSONS.filter(lesson => lesson.category === category);
 }
+
+// Make sure MVP lessons are easily accessible if needed,
+// For now, they are part of CORE_LESSONS
+export const getMvpLessons = (): Lesson[] => {
+  const mvpLessonIds = [
+    'ordering-coffee',
+    'asking-directions',
+    'restaurant-ordering',
+    'hotel-checkin',
+    'shopping-clothes', // new ID for the clothes shopping lesson
+  ];
+  return CORE_LESSONS.filter(lesson => mvpLessonIds.includes(lesson.id));
+};
 
 export const LESSON_SCENARIOS: Record<LessonScenario, string> = {
   COFFEE_SHOP: 'Ordering Coffee',
