@@ -104,6 +104,21 @@ class AIService {
     context: ConversationContext,
     tutorType: keyof typeof this.TUTOR_PERSONALITIES = 'default'
   ): Promise<ConversationResponse> {
+    if (!this.anthropic.apiKey) {
+      console.warn('Anthropic API key not configured. Returning mock AI response.');
+      // Return a mock ConversationResponse object for MVP development
+      return {
+        text: '¡Hola desde el tutor AI simulado! ¿Cómo puedo ayudarte hoy? (mocked)',
+        corrections: [],
+        feedback: {
+          grammar: 'Grammar seems okay for a mock response!',
+          vocabulary: 'Vocabulary is quite limited in this mock!',
+          fluency: 'Fluency is super fast, I am a machine!'
+        },
+        nextPrompts: ['Pregúntame sobre el tiempo.', 'Dime qué aprendiste hoy.']
+      };
+    }
+
     try {
       // Prepare conversation history
       const recentExchanges = context.conversation_history
@@ -138,9 +153,22 @@ class AIService {
     } catch (error) {
       await monitoring.logError({
         type: 'ai_response_generation_failed',
-        error
+        error: error instanceof Error ? error.message : String(error),
+        details: error instanceof Error ? error.stack : undefined,
+        context: { userInput, lessonId: context.lesson_id }
       });
-      throw new Error('Failed to generate AI response. Please try again.');
+      // Fallback to mock response on error
+      console.error('AI response generation failed, returning mock response:', error);
+      return {
+        text: 'Hubo un error generando la respuesta. Intenta de nuevo. (mocked error)',
+        corrections: [],
+        feedback: {
+          grammar: 'N/A due to error.',
+          vocabulary: 'N/A due to error.',
+          fluency: 'N/A due to error.'
+        },
+        nextPrompts: ['¿Puedes repetir, por favor?', 'No entendí.']
+      };
     }
   }
 
