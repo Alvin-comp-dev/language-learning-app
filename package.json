@@ -1,0 +1,99 @@
+{
+  "name": "speakflow",
+  "version": "1.0.0",
+  "description": "AI-powered conversation practice for language learning",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "jest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "init-content": "ts-node scripts/initializeContentPacks.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.17.1",
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "1.21.0",
+    "@react-native-firebase/analytics": "^22.2.1",
+    "@react-native-firebase/app": "^22.2.1",
+    "@react-navigation/bottom-tabs": "^6.5.11",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "@sentry/react-native": "^6.16.1",
+    "@stripe/stripe-react-native": "^0.49.0",
+    "@supabase/supabase-js": "^2.39.3",
+    "expo": "~50.0.6",
+    "expo-av": "~13.10.5",
+    "expo-crypto": "~12.4.1",
+    "expo-device": "~5.4.0",
+    "expo-file-system": "~16.0.6",
+    "expo-font": "~11.4.0",
+    "expo-linear-gradient": "~12.3.0",
+    "expo-linking": "^7.1.7",
+    "expo-mail-composer": "^14.1.5",
+    "expo-secure-store": "~12.3.1",
+    "expo-sqlite": "~11.3.3",
+    "expo-status-bar": "~1.11.1",
+    "html-entities": "^2.6.0",
+    "react": "18.2.0",
+    "react-native": "0.73.4",
+    "react-native-gesture-handler": "~2.14.0",
+    "react-native-reanimated": "~3.3.0",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0",
+    "react-native-svg": "13.9.0",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@react-native-community/eslint-config": "^3.2.0",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.4.3",
+    "@types/jest": "^29.5.12",
+    "@types/react": "~18.2.45",
+    "@types/react-native": "~0.72.2",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "detox": "^20.40.0",
+    "eslint": "^8.0.0",
+    "eslint-config-expo": "^7.0.0",
+    "eslint-plugin-react-native": "^4.1.0",
+    "jest": "^29.2.1",
+    "jest-expo": "~50.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.1.3"
+  },
+  "keywords": [
+    "language-learning",
+    "ai",
+    "speech-recognition",
+    "react-native",
+    "expo"
+  ],
+  "author": "SpeakFlow Team",
+  "license": "MIT",
+  "private": true,
+  "jest": {
+    "preset": "jest-expo",
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "ts",
+      "tsx"
+    ],
+    "moduleNameMapper": {
+      "^@supabase/(.*)$": "<rootDir>/src/__mocks__/config/supabase.ts"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@supabase/.*|isows/.*)"
+    ]
+  }
+}

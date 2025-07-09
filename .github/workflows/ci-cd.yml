@@ -1,0 +1,222 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Run Linter
+        run: npm run lint
+        
+      - name: Run Type Check
+        run: npm run typecheck
+        
+      - name: Run Tests
+        run: npm test
+        
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: coverage/
+          
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run SAST Scan
+        uses: github/codeql-action/analyze@v3
+        with:
+          languages: javascript
+          
+      - name: Run Dependency Scan
+        run: npm audit
+        
+  build-preview:
+    name: Build Preview
+    needs: [test, security-scan]
+    if: github.event_name == 'pull_request' || github.event.inputs.environment == 'preview'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Build Preview
+        run: eas build --platform all --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-builds
+          path: |
+            *.apk
+            *.ipa
+            
+  build-production:
+    name: Build Production
+    needs: [test, security-scan]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Build Production
+        run: eas build --platform all --profile production --non-interactive --auto-submit
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          ASC_APP_ID: ${{ secrets.ASC_APP_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-builds
+          path: |
+            *.aab
+            *.ipa
+            
+  deploy-preview:
+    name: Deploy Preview
+    needs: build-preview
+    if: github.event_name == 'pull_request' || github.event.inputs.environment == 'preview'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-builds
+          
+      - name: Submit to TestFlight
+        run: eas submit -p ios --latest
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Submit to Internal Testing
+        run: eas submit -p android --latest --track internal
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          
+  deploy-production:
+    name: Deploy Production
+    needs: build-production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: production-builds
+          
+      - name: Submit to App Store
+        run: eas submit -p ios --latest
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Submit to Play Store
+        run: eas submit -p android --latest --track production
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          
+  notify:
+    name: Send Notifications
+    needs: [deploy-preview, deploy-production]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: 'deployments'
+          slack-message: '✅ Deployment successful!\nEnvironment: ${{ github.event.inputs.environment || "production" }}\nBranch: ${{ github.ref_name }}'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          
+      - name: Notify Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: 'deployments'
+          slack-message: '❌ Deployment failed!\nEnvironment: ${{ github.event.inputs.environment || "production" }}\nBranch: ${{ github.ref_name }}'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} 

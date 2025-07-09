@@ -1,0 +1,67 @@
+{
+  "cli": {
+    "version": ">= 5.9.1",
+    "promptToConfigurePushNotifications": true
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_ENV": "preview",
+        "APP_VARIANT": "beta"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "ios": {
+        "resourceClass": "m-medium",
+        "credentialsSource": "remote",
+        "enterpriseProvisioning": "universal"
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "credentialsSource": "remote"
+      },
+      "env": {
+        "APP_ENV": "production",
+        "APP_VARIANT": "release"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "your-app-store-id",
+        "appleTeamId": "your-team-id",
+        "companyName": "SpeakFlow",
+        "appName": "SpeakFlow - AI Language Tutor",
+        "language": "en-US",
+        "sku": "com.speakflow.app",
+        "copyright": "2024 SpeakFlow"
+      },
+      "android": {
+        "track": "production",
+        "releaseStatus": "completed"
+      }
+    }
+  },
+  "updates": {
+    "url": "https://u.expo.dev/your-project-id",
+    "fallbackToCacheTimeout": 0,
+    "checkAutomatically": "ON_LOAD",
+    "enabled": true
+  }
+} 
